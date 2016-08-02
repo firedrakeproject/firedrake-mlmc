@@ -8,13 +8,14 @@ def test_state_levels_1():
 
     V = FunctionSpaceHierarchy(MH, 'DG', 0)
 
-    F = FunctionHierarchy(V)
+    F = Function(V[0])
+    G = Function(V[1])
 
     b = 1
     a = 0
 
     try:
-        State(F[0], F[1])
+        State(F, G)
 
     except Warning:
         a = 1
@@ -51,9 +52,10 @@ def test_state_levels_3():
 
     V = FunctionSpaceHierarchy(MH, 'DG', 0)
 
-    F = FunctionHierarchy(V)
+    F = Function(V[0])
+    G = Function(V[1])
 
-    S = State(F[0], F[1])
+    S = State(F, G)
 
     assert S.levels == tuple([0, 1])
 

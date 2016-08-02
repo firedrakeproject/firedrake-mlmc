@@ -13,7 +13,11 @@ mesh_h = MeshHierarchy(mesh, L)
 
 # Create function space / function hierarchies
 V_h = FunctionSpaceHierarchy(mesh_h, 'DG', 1)
-u_h = FunctionHierarchy(V_h)
+
+u_h = []
+for i in range(len(V_h)):
+    u_h.append(Function(V_h[i]))
+
 
 # Loop through levels creating states and printing levels
 for i in range(L):

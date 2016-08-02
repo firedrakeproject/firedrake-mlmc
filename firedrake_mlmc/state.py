@@ -26,8 +26,8 @@ class State(object):
 
         # give the state the attributes the levels of each fine / coarse
         # solution. be careful for states which are lists of multiple functions.
-        self.levels = tuple([get_level(self.state[0])[1],
-                                get_level(self.state[1])[1]])
+        self.levels = tuple([get_level(self.state[0].function_space())[1],
+                             get_level(self.state[1].function_space())[1]])
 
         # add check that both inputs are Functions
         if type(self.state[0]) != Function:
