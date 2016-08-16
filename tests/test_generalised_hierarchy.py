@@ -148,6 +148,47 @@ def test_vector_fs_hierarchy():
     assert isinstance(VFSH._hierarchy, VectorFunctionSpaceHierarchy) == 1
 
 
+def test_mixed_fs_hierarchy():
+
+    mesh = UnitSquareMesh(5, 5)
+    L = 3
+    M = 4
+    GMH = GeneralisedMeshHierarchy(mesh, L, M)
+
+    VSH_1 = GeneralisedFunctionSpaceHierarchy(GMH, 'DG', 0)
+    VSH_2 = GeneralisedFunctionSpaceHierarchy(GMH, 'CG', 1)
+
+    a = 1
+    b = 0
+
+    try:
+        GeneralisedMixedFunctionSpaceHierarchy(VSH_1)
+
+    except TypeError:
+        a = 0
+        b = 1
+
+    assert a < b
+
+    MFSH = GeneralisedMixedFunctionSpaceHierarchy([VSH_1, VSH_2])
+
+    F = Function(MFSH[0])
+
+    assert len(F) == 2
+
+    assert F.function_space()[0].ufl_element().degree() == 0
+    assert F.function_space()[0].ufl_element().family() == 'Discontinuous Lagrange'
+
+    assert F.function_space()[1].ufl_element().degree() == 1
+    assert F.function_space()[1].ufl_element().family() == 'Lagrange'
+
+    assert get_level(MFSH[2])[1] == 2
+
+    assert isinstance(MFSH._full_hierarchy, MixedFunctionSpaceHierarchy) == 1
+
+    assert isinstance(MFSH._hierarchy, MixedFunctionSpaceHierarchy) == 1
+
+
 if __name__ == "__main__":
     import os
     import pytest
