@@ -1,6 +1,9 @@
 from firedrake_mlmc import *
 
+import pytest
 
+
+@pytest.mark.xfail(reason="recursive prolong not merged in master firedrake")
 def test_prolong_to_finest_level():
 
     M = MeshHierarchy(UnitSquareMesh(10, 10), 3)
@@ -20,6 +23,7 @@ def test_prolong_to_finest_level():
     assert norm(assemble(H - F)) <= 0
 
 
+@pytest.mark.xfail(reason="recursive prolong not merged in master firedrake")
 def test_prolong_same_level():
 
     M = MeshHierarchy(UnitSquareMesh(10, 10), 3)
@@ -37,6 +41,7 @@ def test_prolong_same_level():
     assert norm(assemble(H - G)) <= 0
 
 
+@pytest.mark.xfail(reason="recursive prolong not merged in master firedrake")
 def test_inject_same_level():
 
     M = MeshHierarchy(UnitSquareMesh(10, 10), 3)
@@ -75,6 +80,7 @@ def test_prolong_with_non_hierarchy_function():
     assert a == 1
 
 
+@pytest.mark.xfail(reason="recursive prolong not merged in master firedrake")
 def test_prolong_to_any_level():
 
     M = MeshHierarchy(UnitSquareMesh(10, 10), 3)
@@ -94,6 +100,7 @@ def test_prolong_to_any_level():
     assert norm(assemble(H - G)) <= 0
 
 
+@pytest.mark.xfail(reason="recursive prolong not merged in master firedrake")
 def test_inject_to_any_level():
 
     M = MeshHierarchy(UnitSquareMesh(10, 10), 3)
@@ -115,5 +122,4 @@ def test_inject_to_any_level():
 
 if __name__ == "__main__":
     import os
-    import pytest
     pytest.main(os.path.abspath(__file__))
