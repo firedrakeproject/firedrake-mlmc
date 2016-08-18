@@ -1,6 +1,9 @@
 from firedrake_mlmc import *
 
+import pytest
 
+
+@pytest.mark.xfail(reason="recursive prolong not merged in master firedrake")
 def test_generalised_prolong():
 
     M = 4
@@ -26,6 +29,7 @@ def test_generalised_prolong():
     assert norm(assemble(F_2 - G_2)) <= 0
 
 
+@pytest.mark.xfail(reason="recursive prolong not merged in master firedrake")
 def test_generalised_inject():
 
     M = 4
@@ -53,5 +57,4 @@ def test_generalised_inject():
 
 if __name__ == "__main__":
     import os
-    import pytest
     pytest.main(os.path.abspath(__file__))

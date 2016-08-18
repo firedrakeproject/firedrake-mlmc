@@ -9,32 +9,42 @@ from firedrake.mg.utils import *  # noqa
 
 class State(object):
 
-    """ Tuple that stores the state :class:`Function` and properties of them for the coarse (index 0) and fine (index 1) discretizations for a single realisation of the user define system
+    """ Tuple that stores the state :class:`Function` or :class:`Constant` and properties
+        of them for the coarse (index 0) and fine (index 1) discretizations for a single
+        realisation of the user define system
 
-        :param input_1: Coarse state :class:`Function` needed for discretization
-        :type input_1: :class:`Function`
+        :param input_1: Coarse state :class:`Function` or :class:`Constant` needed for discretization
+        :type input_1: :class:`Function` or :class:`Constant`
 
-        :param input_2: Fine state :class:`Function` needed for discretization
-        :type input_2: :class:`Function`
+        :param input_2: Fine state :class:`Function` or :class:`Constant` needed for discretization
+        :type input_2: :class:`Function` or :class:`Constant`
 
     """
 
     def __init__(self, input_1, input_2):
 
-        # tuple of coarse and fine state :class:`Function`
+        # tuple of coarse and fine state :class:`Function` or :class:`Constant`
         self.state = tuple([input_1, input_2])
 
-        # give the state the attributes the levels of each fine / coarse
-        # solution. be careful for states which are lists of multiple functions.
-        self.levels = tuple([get_level(self.state[0].function_space())[1],
-                             get_level(self.state[1].function_space())[1]])
+        # give the state the attributes the levels of each fine / coarse solution
+        self.levels = tuple([get_level(self.state[0].domain())[1],
+                             get_level(self.state[1].domain())[1]])
 
-        # add check that both inputs are Functions
-        if type(self.state[0]) != Function:
-            raise TypeError('state input is not a Function')
+        # add check that both inputs are :class:`Function` or :class:`Constant`
+        if not isinstance(self.state[0], Function) and not isinstance(self.state[0], Constant):
+            raise TypeError('state input is not a Function or Constant')
 
-        if type(self.state[1]) != Function:
-            raise TypeError('state input is not a Function')
+        if not isinstance(self.state[1], Function) and not isinstance(self.state[1], Constant):
+            raise TypeError('state input is not a Function or Constant')
+
+        # if they are a :class:`Constant` then they need domain
+        if isinstance(self.state[1], Constant) or isinstance(self.state[0], Constant):
+            if self.state[1].domain is None or self.state[0].domain is None:
+                raise AttributeError('state Constants do not have an associated mesh')
+
+        # finally check if both states are the same type
+        if not isinstance(self.state[1], type(self.state[0])):
+            raise TypeError('state inputs are not same type')
 
         # add check for levels - non fatal -> perhaps change to actual error
         if self.levels[0] == -1 or self.levels[1] == -1:
