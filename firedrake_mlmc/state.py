@@ -4,6 +4,7 @@ from __future__ import division  # Get proper divison
 from __future__ import absolute_import
 
 from firedrake import *  # noqa
+from firedrake_mlmc.utils import *  # noqa
 from firedrake.mg.utils import *  # noqa
 
 
@@ -27,8 +28,8 @@ class State(object):
         self.state = tuple([input_1, input_2])
 
         # give the state the attributes the levels of each fine / coarse solution
-        self.levels = tuple([get_level(self.state[0].domain())[1],
-                             get_level(self.state[1].domain())[1]])
+        self.levels = tuple([get_refined_level(self.state[0].domain())[1],
+                             get_refined_level(self.state[1].domain())[1]])
 
         # add check that both inputs are :class:`Function` or :class:`Constant`
         if not isinstance(self.state[0], Function) and not isinstance(self.state[0], Constant):
