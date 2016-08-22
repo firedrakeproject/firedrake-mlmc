@@ -3,6 +3,7 @@ from firedrake_mlmc import *
 import pytest
 
 
+@pytest.mark.xfail(reason="recursive_prolong_inject branch has not been merged to firedrake master")
 def test_refined_level():
 
     refinements_per_level = 2

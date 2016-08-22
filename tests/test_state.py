@@ -1,6 +1,9 @@
 from firedrake_mlmc import *
 
+import pytest
 
+
+@pytest.mark.xfail(reason="recursive_prolong_inject branch has not been merged to firedrake master")
 def test_state_levels_1():
 
     M = UnitSquareMesh(10, 10)
@@ -24,6 +27,7 @@ def test_state_levels_1():
     assert a < b
 
 
+@pytest.mark.xfail(reason="recursive_prolong_inject branch has not been merged to firedrake master")
 def test_constants():
 
     M = UnitSquareMesh(10, 10)
@@ -37,6 +41,7 @@ def test_constants():
     assert S.levels == tuple([0, 1])
 
 
+@pytest.mark.xfail(reason="recursive_prolong_inject branch has not been merged to firedrake master")
 def test_inputs():
 
     M = UnitSquareMesh(10, 10)
@@ -60,6 +65,7 @@ def test_inputs():
     assert a > b
 
 
+@pytest.mark.xfail(reason="recursive_prolong_inject branch has not been merged to firedrake master")
 def test_state_levels_2():
 
     M = UnitSquareMesh(10, 10)
@@ -81,6 +87,7 @@ def test_state_levels_2():
     assert a > b
 
 
+@pytest.mark.xfail(reason="recursive_prolong_inject branch has not been merged to firedrake master")
 def test_state_levels_3():
 
     M = UnitSquareMesh(10, 10)
@@ -96,6 +103,7 @@ def test_state_levels_3():
     assert S.levels == tuple([0, 1])
 
 
+@pytest.mark.xfail(reason="recursive_prolong_inject branch has not been merged to firedrake master")
 def test_state_levels_4():
 
     M = MeshHierarchy(UnitSquareMesh(10, 10), 2)
@@ -119,5 +127,4 @@ def test_state_levels_4():
 
 if __name__ == "__main__":
     import os
-    import pytest
     pytest.main(os.path.abspath(__file__))
