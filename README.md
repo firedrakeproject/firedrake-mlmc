@@ -3,6 +3,9 @@
 A toolbox for multilevel Monte Carlo algorithms with Firedrake
 
 ## Linux terminal installation
+
+As a prerequisite, it is required to have Firedrake installed alongside it's dependencies. Instructions on how to this can be found at: http://firedrakeproject.org/download.html.
+
 To install, type the following commands into the terminal whilst in an empty repository:
 
 1. `git init`
