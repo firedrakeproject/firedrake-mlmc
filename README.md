@@ -12,7 +12,7 @@ To install, type the following commands into the terminal whilst in an empty rep
 4. `python setup.py install`
 
 ## Generating the documentation
-To generate the documentation, `firedrake_mlmc_doc.pdf`, type the following commands into the terminal:
+To generate the documentation, `firedrake_mlmc_doc.pdf`, type the following commands into the terminal inside the `firedrake_mlmc` repository:
 
 1. `cd ./docs`
 2. `make docs`
