@@ -9,7 +9,7 @@ To install, type the following commands into the terminal whilst in an empty rep
 1. `git init`
 2. `git clone https://github.com/firedrakeproject/firedrake-mlmc firedrake_mlmc`
 3. `cd ./firedrake_mlmc`
-4. `python setup.py install`
+4. `pip install .`
 
 ## Generating the documentation
 To generate the documentation, `firedrake_mlmc_doc.pdf`, type the following commands into the terminal inside the `firedrake_mlmc` repository:
