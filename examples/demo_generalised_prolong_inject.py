@@ -55,4 +55,5 @@ inject(u_h[1], u_h_[0])
 # Print error - this should be 0 as we're using the finer solution
 x = SpatialCoordinate(MH[0])
 Exact = Function(FSH[0]).interpolate(sin(x[0] * 2 * pi))
+print 'Below error should be 0 as using finer solution:'
 print norm(assemble(Exact - u_h_[0]))
