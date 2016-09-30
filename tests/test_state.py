@@ -3,13 +3,12 @@ from firedrake_mlmc import *
 import pytest
 
 
-@pytest.mark.xfail(reason="recursive_prolong_inject branch has not been merged to firedrake master")
 def test_state_levels_1():
 
     M = UnitSquareMesh(10, 10)
     MH = MeshHierarchy(M, 1)
 
-    V = FunctionSpaceHierarchy(MH, 'DG', 0)
+    V = [FunctionSpace(m, 'DG', 0) for m in MH]
 
     F = Function(V[0])
     G = Function(V[1])
@@ -27,7 +26,6 @@ def test_state_levels_1():
     assert a < b
 
 
-@pytest.mark.xfail(reason="recursive_prolong_inject branch has not been merged to firedrake master")
 def test_constants():
 
     M = UnitSquareMesh(10, 10)
@@ -41,13 +39,12 @@ def test_constants():
     assert S.levels == tuple([0, 1])
 
 
-@pytest.mark.xfail(reason="recursive_prolong_inject branch has not been merged to firedrake master")
 def test_inputs():
 
     M = UnitSquareMesh(10, 10)
     MH = MeshHierarchy(M, 1)
 
-    V = FunctionSpaceHierarchy(MH, 'DG', 0)
+    V = [FunctionSpace(m, 'DG', 0) for m in MH]
 
     F = Function(V[0])
     G = Constant(0, domain=MH[1])
@@ -65,10 +62,10 @@ def test_inputs():
     assert a > b
 
 
-@pytest.mark.xfail(reason="recursive_prolong_inject branch has not been merged to firedrake master")
 def test_state_levels_2():
 
     M = UnitSquareMesh(10, 10)
+
     V = FunctionSpace(M, 'DG', 0)
 
     F = Function(V)
@@ -80,20 +77,19 @@ def test_state_levels_2():
     try:
         State(F, G)
 
-    except Warning:
+    except ValueError:
         a = 1
         b = 0
 
     assert a > b
 
 
-@pytest.mark.xfail(reason="recursive_prolong_inject branch has not been merged to firedrake master")
 def test_state_levels_3():
 
     M = UnitSquareMesh(10, 10)
     MH = MeshHierarchy(M, 1)
 
-    V = FunctionSpaceHierarchy(MH, 'DG', 0)
+    V = [FunctionSpace(m, 'DG', 0) for m in MH]
 
     F = Function(V[0])
     G = Function(V[1])
@@ -103,11 +99,10 @@ def test_state_levels_3():
     assert S.levels == tuple([0, 1])
 
 
-@pytest.mark.xfail(reason="recursive_prolong_inject branch has not been merged to firedrake master")
 def test_state_levels_4():
 
     M = MeshHierarchy(UnitSquareMesh(10, 10), 2)
-    V = FunctionSpaceHierarchy(M, 'DG', 0)
+    V = [FunctionSpace(m, 'DG', 0) for m in M]
 
     F = Function(V[0])
     G = Function(V[2])
