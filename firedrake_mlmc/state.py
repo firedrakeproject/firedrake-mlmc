@@ -4,7 +4,6 @@ from __future__ import division  # Get proper divison
 from __future__ import absolute_import
 
 from firedrake import *  # noqa
-from firedrake_mlmc.utils import *  # noqa
 from firedrake.mg.utils import *  # noqa
 
 
@@ -28,8 +27,8 @@ class State(object):
         self.state = tuple([input_1, input_2])
 
         # give the state the attributes the levels of each fine / coarse solution
-        self.levels = tuple([get_refined_level(self.state[0].domain())[1],
-                             get_refined_level(self.state[1].domain())[1]])
+        self.levels = tuple([get_level(self.state[0].domain())[1],
+                             get_level(self.state[1].domain())[1]])
 
         # add check that both inputs are :class:`Function` or :class:`Constant`
         if not isinstance(self.state[0], Function) and not isinstance(self.state[0], Constant):
@@ -50,7 +49,7 @@ class State(object):
         # add check for levels - non fatal -> perhaps change to actual error
         if self.levels[0] == -1 or self.levels[1] == -1:
             raise Warning('Levels of state may not be actual hierarchal levels.' +
-                          ' Check if they belong to FunctionHierarchy! get_level has failed.')
+                          ' Check if they belong to Hierarchy! get_level has failed.')
 
         # check for non consecutive levels
         if self.levels[1] - 1 != self.levels[0]:
