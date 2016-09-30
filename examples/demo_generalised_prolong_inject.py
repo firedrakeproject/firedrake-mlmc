@@ -18,10 +18,10 @@ refinements_per_level = 2
 MH = MeshHierarchy(mesh, L, refinements_per_level=refinements_per_level)
 
 # now create a DG0 function space hierarchy on this generalised mesh hierarchy
-FSH = FunctionSpaceHierarchy(MH, 'DG', 1)
+FSH = [FunctionSpace(m, 'DG', 1) for m in MH]
 
 # note how the intermediate levels of the function space hierarchy are stored
-OFSH = FSH._full_hierarchy
+OFSH = MH._unskipped_hierarchy
 
 # one can build a function hierarchy of the generalised function space hierarchy
 u_h = []

@@ -8,11 +8,14 @@ from firedrake_mlmc import *
 
 # Create mesh hierarchy
 mesh = UnitSquareMesh(5, 5)
-L = 3
+L = 4
 mesh_h = MeshHierarchy(mesh, L)
 
 # Create function space / function hierarchies
-V_h = FunctionSpaceHierarchy(mesh_h, 'DG', 1)
+V_h = []
+for i in range(len(mesh_h)):
+    V_h.append(FunctionSpace(mesh_h[i], 'DG', 1))
+
 u_h = []
 for i in range(len(V_h)):
     u_h.append(Function(V_h[i]))
@@ -41,7 +44,7 @@ for i in range(len(V_h)):
     u_h_.append(Function(V_h[i]))
 
 # Then prolong to the finest level
-prolong(u_h[0], u_h_[-1])
+prolong(u_h[0], u_h_[4])
 
 # Print error
 x = SpatialCoordinate(mesh_h[-1])
