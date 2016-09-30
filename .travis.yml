@@ -1,40 +1,35 @@
 notifications:
   slack:
-    secure: Oz4HMXeiM4vU/SfYnqXoK3FS2gpgsYtsAcyEB/4exBfYn9/BhzP1emnggW4J5AxkYFbHdmKTsNHin6J3rPQ9esOjXuSOG4SfYC6SfJQhx8+dJhF159IYHWPrDB8NxS6yJs9ZNOma2u7AcTUIh6n8fo8TUrprip04qhADk1godVov5ZLW+84zayepqFodwNoXq41F0c8ceUIh9Yy27v7QDGOuZ+NXPs1y6YobVMrAJtC8seRhpaq/uJmttv5MtR4CTtp0IG7PGGsZFWvm2iUXXSuudLuDBz54ATVnz6Fc5twJESKlZjq7NiuiKaZpEQSCURfcj6dbDo0rlBO72ztXUAQBE/ItkmO52s48Ns9Valwh+/h/0gLHW6H+zlinu24StRVbU3ltDh2ZCxWaeYVSxaw5Ho5Uira3/5iFHeJaS3h7g+3cP4Gw0/6Jk1Xe0SsJhDsrskDGmoi9SiwNxHqUAOWqB1jguQCAihWvjVEJ7ZFaH5eKWh4447F2K5IXUfRWG7InHej7DaUNfgzs+29RfSLsF4PbvRYE98OrhCr9foaGNuTVs4L5L7x9piqJHRj5WyDxuqUegyHiqpwJ4BSaYacSQ5f6I2eYJSTvTMsrbpZ9AeLYW6bq2/4S3le7sG5OTqxAqSxHY9nwcAnMcYmO5hr66sLCT0TXF78C1DXxe8Q=
-
+    secure: QUWAa+hFk53iQSEWoUk3SU0e/e8GOWfAAb/dwPRpJJ+CEqOxM3TraIDRlqA5HJlGwvlMmQc2e3EvE7x8vQE/izgp9EUYWxHM/QZ88rPNaQuYMhxvE1fDDS1/FO45DcAUkYh8hdA0c+LMEBSu6glL+tabHiZ8wYTo3rrqxKSos1fHJ3Q1F3PIl8VbtcJglXtG5dcjG4wKAyEO943d9iIDREWvEsB2Llui/2t4aqlV8Y9/wIDQglqRt72MxynJSz1hZSUJKceEuOjNaBKowtHx/k2wfxRpPF5ogk0J6l/Lr7Lepvb4Ekg6DgAzzhUrXlj04NHAzYzsY7xtaptuxNsZuClGSXujBj4BPFHQ3nnC838AcuQZ793aztCtiOH5AMJUvJvKGgZU9U06e3ty8RCiEzhaVottXxkR7UY1kzhsQ7/i5LADAAZi+6Sd9uBrmk7LzlnIp6GmphbFq+KOsmxS9q77JFPXnGSfoqZ1YqacLp/nIkG+3PurWvBtlKYUhx+SDkHUEH/f85sl7xt1DwMEfAQO/A1bljWKSuhaa6xwF04by1xDfnYjnCeatTVETEhHanFfa1Jx9bMuvX6TsNt7HlXM69abxTJh8MLbe4DNnF9mFlbvWX24Jux5ksfdGdhjIGQ78mCHU0Vy3R/RADYA6O+PLigBli4QczH37ZCwO5E=
 language: python
-python: "2.7"
+python: '2.7'
 addons:
   apt:
     packages:
-        - build-essential
-        - python-dev
-        - git
-        - mercurial
-        - python-pip
-        - libopenmpi-dev
-        - openmpi-bin
-        - libblas-dev
-        - liblapack-dev
-        - gfortran
+    - build-essential
+    - python-dev
+    - git
+    - mercurial
+    - python-pip
+    - libopenmpi-dev
+    - openmpi-bin
+    - libblas-dev
+    - liblapack-dev
+    - gfortran
 os:
-  - linux
-
+- linux
 env:
   global:
-    - CC=mpicc
-
+  - CC=mpicc
 before_install:
-  - pip install -U pip
-  - pip install -U virtualenv
-  - pip install flake8
-
+- pip install -U pip
+- pip install -U virtualenv
+- pip install flake8
 install:
-  - curl -O https://raw.githubusercontent.com/firedrakeproject/firedrake/master/scripts/firedrake-install
-  - python ./firedrake-install --disable-ssh --minimal-petsc
-  - . ./firedrake/bin/activate
-  - pip install .
-
+- curl -O https://raw.githubusercontent.com/firedrakeproject/firedrake/master/scripts/firedrake-install
+- python ./firedrake-install --disable-ssh --minimal-petsc
+- . ./firedrake/bin/activate
+- pip install .
 script:
-  - make lint
-  - make test
+- make lint
+- make test
