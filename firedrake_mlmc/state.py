@@ -46,10 +46,9 @@ class State(object):
         if not isinstance(self.state[1], type(self.state[0])):
             raise TypeError('state inputs are not same type')
 
-        # add check for levels - non fatal -> perhaps change to actual error
-        if self.levels[0] == -1 or self.levels[1] == -1:
-            raise Warning('Levels of state may not be actual hierarchal levels.' +
-                          ' Check if they belong to Hierarchy! get_level has failed.')
+        # add check for levels
+        if self.levels[0] is None or self.levels[1] is None:
+            raise ValueError('State not part of actual hierarchy. get_level has failed.')
 
         # check for non consecutive levels
         if self.levels[1] - 1 != self.levels[0]:
