@@ -282,8 +282,8 @@ showstringspaces=false            %
 
 \chapter{Forming Mesh and Function Space Hierarchies}
 
-The first step to using this package is understanding how to use hierarchies of meshes and function spaces alongside \textbf{firedrake}. Suppose we build a \pythonclass{Mesh} on a unit square, and want to use this as the coarsest mesh in a refined hierarchy of $L = 4$ other meshes (so a hierarchy of length $L + 1$). We can do this via the example below, by using a \pythonclass{MeshHierarchy}. This allows one to define the number of refinements (doubling the number of cells) per level with an additional argument as seen below. Each \pythonclass{MeshHierarchy} has an attribute \pythonclass{MeshHierarchy.\_hierarchy} corresponding to the hierarchy of meshes with the specified number of refinements per level, and \pythonclass{MeshHierarchy.\_full\_hierarchy} corresponding to the full hierarchy of intermediate meshes (with one refinement per level). \\
-One can then build \pythonclass{FunctionSpaceHierarchy}s via the following commands:\\
+The first step to using this package is understanding how to use hierarchies of meshes and function spaces alongside \textbf{firedrake}. Suppose we build a \pythonclass{Mesh} on a unit square, and want to use this as the coarsest mesh in a refined hierarchy of $L = 4$ other meshes (so a hierarchy of length $L + 1$). We can do this via the example below, by using a \pythonclass{MeshHierarchy}. This allows one to define the number of refinements (doubling the number of cells) per level with an additional argument as seen below. Each \pythonclass{MeshHierarchy} has an attribute \pythonclass{MeshHierarchy.\_hierarchy} corresponding to the hierarchy of meshes with the specified number of refinements per level, and \pythonclass{MeshHierarchy.\_unskipped\_hierarchy} corresponding to the full hierarchy of intermediate meshes (with one refinement per level). \\
+One can then build a hierarchy of \pythonclass{FunctionSpace}s  on this \pythonclass{MeshHierarchy} via the following commands:\\
 
 \begin{python}
 import firedrake_mlmc as *
@@ -294,14 +294,16 @@ coarsest_mesh = UnitIntervalMesh(5)
 # L and refinements per level
 L = 4; refinements_per_level = 1
 
-# define mesh and function space hierarchies 
+# define mesh hierarchy
 m = MeshHierarchy(coarsest_mesh, L,
                   refinements_per_level=refinements_per_level)
-fs = FunctionSpaceHierarchy(m, 'DG', 1)
+
+# build a hierarchy of function spaces on the
+# mesh hierarchy
+fs = tuple([FunctionSpace(mesh, 'DG', 1) for mesh in m])
 \end{python}
 
-Furthermore hierarchies with more than one refinement per level are also invariant to the prolong and injection methods that exist in multigrid \textbf{firedrake} currently. For example, given \pythoninline{F = Function(fs[0]).assign(2)} and \pythoninline{G = Function(fs[2])}, one can prolong F to G via \pythoninline{prolong(F, G)}. \\
-Just as with their \pythonclass{Mesh} counterparts, a \pythonclass{FunctionSpaceHierarchy} has attributes, \pythonclass{FunctionSpaceHierarchy.\_hierarchy} corresponding to the hierarchy of functionspaces with the specified number of refinements per level, and \pythonclass{FunctionSpaceHierarchy.\_full\_hierarchy} corresponding to the full hierarchy of intermediate function spaces (with one refinement per level).
+A hierarchy of \pythonclass{FunctionSpace}s defined by a \pythoninline{tuple} is purely arbitrary here. Furthermore hierarchies with more than one refinement per level are also invariant to the prolong and injection methods that exist in multigrid \textbf{firedrake} currently. For example, given \pythoninline{F = Function(fs[0]).assign(2)} and \pythoninline{G = Function(fs[2])}, one can prolong F to G via \pythoninline{prolong(F, G)}. 
 
 \chapter{Creating States of Coarse and Fine Solutions}
 
@@ -350,7 +352,7 @@ S= State(coarse, fine)
 print S.levels
 \end{python}
 
-This object requires \pythoninline{coarse_lvl} and \pythoninline{fine_lvl} to be consecutive levels in the \pythonclass{MeshHierarchy} / \pythonclass{FunctionSpaceHierarchy}. Here, the coarse and fine inputs can be a \pythonclass{Function} or one can use input scalar quantities of interest from functions which have been computed on different levels of the \pythonclass{FunctionSpaceHierarchy} using \pythonclass{Constant}s. \\
+This object requires \pythoninline{coarse_lvl} and \pythoninline{fine_lvl} to be consecutive levels in the \pythonclass{MeshHierarchy}. Here, the coarse and fine inputs can be a \pythonclass{Function} or one can use input scalar quantities of interest from functions on \pythonclass{FunctionSpace}s built on different levels of a \pythonclass{MeshHierarchy} using \pythonclass{Constant}s. \\
 
 \begin{python}
 # define the scalar quantities of interest
@@ -361,7 +363,7 @@ fine = Constant(0, domain=m[fine_lvl])
 S= State(coarse, fine)
 \end{python}
 
-These \pythonclass{Constant}s contain their level information from the specified domain (\pythonclass{MeshHierarchy}) whereas \pythonclass{Function}s in a \pythonclass{State} exist on a \pythonclass{FunctionSpaceHierarchy}.
+Both the \pythonclass{Constant}s and \pythonclass{Function}s in a \pythonclass{State} contain their level information from the specified domain they are built on (from a \pythonclass{MeshHierarchy}).
 
 
 \chapter{Building an Ensemble Hierarchy}
