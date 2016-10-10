@@ -12,7 +12,7 @@ L = 3
 mesh_h = MeshHierarchy(mesh, L)
 
 # Create function space / function hierarchies
-V_h = FunctionSpaceHierarchy(mesh_h, 'DG', 1)
+V_h = [FunctionSpace(m, 'DG', 1) for m in mesh_h]
 
 u_h = []
 for i in range(len(V_h)):

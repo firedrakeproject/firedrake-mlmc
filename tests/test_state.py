@@ -1,12 +1,14 @@
 from firedrake_mlmc import *
 
+import pytest
+
 
 def test_state_levels_1():
 
     M = UnitSquareMesh(10, 10)
     MH = MeshHierarchy(M, 1)
 
-    V = FunctionSpaceHierarchy(MH, 'DG', 0)
+    V = [FunctionSpace(m, 'DG', 0) for m in MH]
 
     F = Function(V[0])
     G = Function(V[1])
@@ -42,7 +44,7 @@ def test_inputs():
     M = UnitSquareMesh(10, 10)
     MH = MeshHierarchy(M, 1)
 
-    V = FunctionSpaceHierarchy(MH, 'DG', 0)
+    V = [FunctionSpace(m, 'DG', 0) for m in MH]
 
     F = Function(V[0])
     G = Constant(0, domain=MH[1])
@@ -63,6 +65,7 @@ def test_inputs():
 def test_state_levels_2():
 
     M = UnitSquareMesh(10, 10)
+
     V = FunctionSpace(M, 'DG', 0)
 
     F = Function(V)
@@ -74,7 +77,7 @@ def test_state_levels_2():
     try:
         State(F, G)
 
-    except Warning:
+    except ValueError:
         a = 1
         b = 0
 
@@ -86,7 +89,7 @@ def test_state_levels_3():
     M = UnitSquareMesh(10, 10)
     MH = MeshHierarchy(M, 1)
 
-    V = FunctionSpaceHierarchy(MH, 'DG', 0)
+    V = [FunctionSpace(m, 'DG', 0) for m in MH]
 
     F = Function(V[0])
     G = Function(V[1])
@@ -99,7 +102,7 @@ def test_state_levels_3():
 def test_state_levels_4():
 
     M = MeshHierarchy(UnitSquareMesh(10, 10), 2)
-    V = FunctionSpaceHierarchy(M, 'DG', 0)
+    V = [FunctionSpace(m, 'DG', 0) for m in M]
 
     F = Function(V[0])
     G = Function(V[2])
@@ -119,5 +122,4 @@ def test_state_levels_4():
 
 if __name__ == "__main__":
     import os
-    import pytest
     pytest.main(os.path.abspath(__file__))
