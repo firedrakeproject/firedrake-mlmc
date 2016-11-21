@@ -26,10 +26,6 @@ class State(object):
         # tuple of coarse and fine state :class:`Function` or :class:`Constant`
         self.state = tuple([input_1, input_2])
 
-        # give the state the attributes the levels of each fine / coarse solution
-        self.levels = tuple([get_level(self.state[0].domain())[1],
-                             get_level(self.state[1].domain())[1]])
-
         # add check that both inputs are :class:`Function` or :class:`Constant`
         if not isinstance(self.state[0], Function) and not isinstance(self.state[0], Constant):
             raise TypeError('state input is not a Function or Constant')
@@ -37,14 +33,18 @@ class State(object):
         if not isinstance(self.state[1], Function) and not isinstance(self.state[1], Constant):
             raise TypeError('state input is not a Function or Constant')
 
-        # if they are a :class:`Constant` then they need domain
-        if isinstance(self.state[1], Constant) or isinstance(self.state[0], Constant):
-            if self.state[1].domain is None or self.state[0].domain is None:
-                raise AttributeError('state Constants do not have an associated mesh')
-
         # finally check if both states are the same type
         if not isinstance(self.state[1], type(self.state[0])):
             raise TypeError('state inputs are not same type')
+
+        # if they are a :class:`Constant` then they need domain
+        if isinstance(self.state[1], Constant) or isinstance(self.state[0], Constant):
+            if self.state[1].ufl_domain() is None or self.state[0].ufl_domain() is None:
+                raise AttributeError('state Constants do not have an associated mesh')
+
+        # give the state the attributes the levels of each fine / coarse solution
+        self.levels = tuple([get_level(self.state[0].ufl_domain())[1],
+                             get_level(self.state[1].ufl_domain())[1]])
 
         # add check for levels
         if self.levels[0] is None or self.levels[1] is None:
