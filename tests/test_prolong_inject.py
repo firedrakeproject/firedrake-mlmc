@@ -17,7 +17,7 @@ def test_prolong_to_finest_level():
 
     prolong(G, H)
 
-    assert get_level(H.domain())[1] == len(M) - 1
+    assert get_level(H.ufl_domain())[1] == len(M) - 1
 
     assert norm(assemble(H - F)) <= 0
 
@@ -36,7 +36,7 @@ def test_prolong_to_any_level():
 
     prolong(F, H)
 
-    assert get_level(H.domain())[1] == 2
+    assert get_level(H.ufl_domain())[1] == 2
 
     assert norm(assemble(H - G)) <= 0
 
@@ -55,7 +55,7 @@ def test_inject_to_any_level():
 
     inject(F, H)
 
-    assert get_level(H.domain())[1] == 0
+    assert get_level(H.ufl_domain())[1] == 0
 
     assert norm(assemble(H - G)) <= 0
 

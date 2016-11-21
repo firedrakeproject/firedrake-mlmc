@@ -128,10 +128,6 @@ class EnsembleHierarchy(object):
 
             raise TypeError('input to append isnt a tuple')
 
-        if get_level(S.state[0].domain())[1] is None:
-
-            raise TypeError('state members arent part of a hierarchy')
-
         if not isinstance(S.state[0], self._type):
 
             raise TypeError('The state does not consist of correct types')
@@ -139,6 +135,10 @@ class EnsembleHierarchy(object):
         if not isinstance(S.state[1], self._type):
 
             raise TypeError('The state does not consist of correct types')
+
+        if get_level(S.state[0].ufl_domain())[1] is None:
+
+            raise TypeError('state members arent part of a hierarchy')
 
         # Recover level of state (the coarser level)
         Level_to_append_to = S.levels[0]
@@ -248,7 +248,7 @@ class EnsembleHierarchy(object):
                                                         ((T[1] - T[0]) ** 2))
 
             # compute min cell edge length for finer level of state
-            self.dxl[Level_to_append_to] = MinDx(S.state[1].domain())
+            self.dxl[Level_to_append_to] = MinDx(S.state[1].ufl_domain())
 
     def ClearEnsemble(self):
         """ Clears the ensemble hierarchy
