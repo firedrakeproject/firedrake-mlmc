@@ -206,6 +206,41 @@ def test_clear_ensemble():
     assert EH.nl == [10, 10]
 
 
+def test_clear_identifier_hierarchy():
+
+    M = UnitSquareMesh(10, 10)
+    L = 3
+    MH = MeshHierarchy(M, L)
+
+    V_h = [FunctionSpace(m, 'DG', 1) for m in MH]
+
+    EH = EnsembleHierarchy(V_h)
+
+    u_h_1 = Function(V_h[0])
+    u_h_2 = Function(V_h[1])
+
+    for i in range(10):
+
+        S = State(u_h_1, u_h_2)
+        EH.AppendToEnsemble(S)
+
+    u_h_1 = Function(V_h[1])
+    u_h_2 = Function(V_h[2])
+
+    for i in range(10):
+
+        S = State(u_h_1, u_h_2)
+        EH.AppendToEnsemble(S)
+
+    EH.UpdateStatistics(clear_ensemble=True)
+
+    assert len(EH._identifier_hierarchy) == 2
+
+    assert EH._identifier_hierarchy[0] == []
+
+    assert EH._identifier_hierarchy[1] == []
+
+
 def test_keep_ensemble():
 
     M = UnitSquareMesh(10, 10)
@@ -341,6 +376,161 @@ def test_mean_variance_compute():
     assert np.all(EH.Mean[0].dat.data == exact_mean) == 1
 
     assert np.all(EH.MultilevelExpectation.dat.data == exact_mean) == 1
+
+
+def test_identifier_hierarchy():
+
+    M = UnitSquareMesh(10, 10)
+    L = 3
+    MH = MeshHierarchy(M, L)
+
+    V_h = [FunctionSpace(m, 'DG', 1) for m in MH]
+
+    EH = EnsembleHierarchy(V_h)
+
+    u_h_1 = Function(V_h[0]).assign(1)
+    u_h_2 = Function(V_h[1]).assign(2)
+
+    for i in range(10):
+
+        S = State(u_h_1, u_h_2)
+        EH.AppendToEnsemble(S)
+        assert EH._identifier_hierarchy[0][i] == S.identifier
+        assert S.index == tuple([0, i])
+
+    u_h_1 = Function(V_h[1]).assign(2)
+    u_h_2 = Function(V_h[2]).assign(3)
+
+    for i in range(10):
+
+        S = State(u_h_1, u_h_2)
+        EH.AppendToEnsemble(S)
+        assert EH._identifier_hierarchy[1][i] == S.identifier
+        assert S.index == tuple([1, i])
+
+    assert len(EH._identifier_hierarchy) == len(EH._hierarchy)
+    assert len(EH._identifier_hierarchy[0]) == len(EH._hierarchy[0])
+    assert len(EH._identifier_hierarchy[1]) == len(EH._hierarchy[1])
+
+
+def test_state_hierarchy_1():
+
+    M = UnitSquareMesh(10, 10)
+    L = 3
+    MH = MeshHierarchy(M, L)
+
+    V_h = [FunctionSpace(m, 'DG', 1) for m in MH]
+
+    EH = EnsembleHierarchy(V_h)
+
+    u_h_1 = Function(V_h[0]).assign(1)
+    u_h_2 = Function(V_h[1]).assign(2)
+
+    ens1 = []
+    ens2 = []
+
+    for i in range(10):
+
+        S = State(u_h_1, u_h_2)
+        EH.AppendToEnsemble(S)
+        ens1.append(S)
+        assert np.max(np.abs(EH._state_hierarchy[0][i].state[1].dat.data -
+                      ens1[i].state[1].dat.data)) < 1e-5
+        assert np.max(np.abs(EH._state_hierarchy[0][i].identifier - ens1[i].identifier)) < 1e-5
+
+    u_h_1 = Function(V_h[1]).assign(2)
+    u_h_2 = Function(V_h[2]).assign(3)
+
+    for i in range(10):
+
+        S = State(u_h_1, u_h_2)
+        EH.AppendToEnsemble(S)
+        ens2.append(S)
+        assert np.max(np.abs(EH._state_hierarchy[1][i].state[1].dat.data -
+                      ens2[i].state[1].dat.data)) < 1e-5
+        assert np.max(np.abs(EH._state_hierarchy[1][i].identifier - ens2[i].identifier)) < 1e-5
+
+
+def test_updating_ensemble_members():
+
+    M = UnitSquareMesh(10, 10)
+    L = 3
+    MH = MeshHierarchy(M, L)
+
+    V_h = [FunctionSpace(m, 'DG', 1) for m in MH]
+
+    EH = EnsembleHierarchy(V_h)
+
+    u_h_1 = Function(V_h[0]).assign(1)
+    u_h_2 = Function(V_h[1]).assign(2)
+
+    ens1 = []
+    ens2 = []
+
+    for i in range(10):
+
+        S = State(u_h_1, u_h_2)
+        EH.AppendToEnsemble(S)
+        ens1.append(S)
+
+    u_h_1 = Function(V_h[1]).assign(2)
+    u_h_2 = Function(V_h[2]).assign(3)
+
+    for i in range(10):
+
+        S = State(u_h_1, u_h_2)
+        EH.AppendToEnsemble(S)
+        ens2.append(S)
+
+    EH.UpdateStatistics()
+    Mean = np.copy(EH.MultilevelExpectation.dat.data[:])
+
+    # change the states
+    for i in range(10):
+
+        ens2[i].state[1].assign(4)
+        EH.UpdateEnsembleMember(ens2[i])
+
+    EH.UpdateStatistics()
+    NewMean = EH.MultilevelExpectation.dat.data[:]
+    assert np.abs(np.max((NewMean - Mean) - 1.0)) < 1e-5
+
+
+def test_state_hierarchy_2():
+
+    M = UnitSquareMesh(10, 10)
+    L = 3
+    MH = MeshHierarchy(M, L)
+
+    V_h = [FunctionSpace(m, 'DG', 1) for m in MH]
+
+    EH = EnsembleHierarchy(V_h)
+
+    u_h_1 = Function(V_h[0]).assign(1)
+    u_h_2 = Function(V_h[1]).assign(2)
+
+    for i in range(10):
+
+        S = State(u_h_1, u_h_2)
+        EH.AppendToEnsemble(S)
+
+    u_h_1 = Function(V_h[1]).assign(2)
+    u_h_2 = Function(V_h[2]).assign(3)
+
+    for i in range(10):
+
+        S = State(u_h_1, u_h_2)
+        EH.AppendToEnsemble(S)
+
+    EH.UpdateStatistics()
+
+    # change the states
+    for i in range(10):
+
+        EH._state_hierarchy[1][i].state[1].assign(4)
+        EH.UpdateEnsembleMember(EH._state_hierarchy[1][i])
+        assert np.max(np.abs(EH._state_hierarchy[1][i].state[1].dat.data - 4.0)) < 1e-5
+        assert EH._state_hierarchy[1][i].identifier == EH._identifier_hierarchy[1][i]
 
 
 if __name__ == "__main__":

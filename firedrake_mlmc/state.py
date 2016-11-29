@@ -54,4 +54,8 @@ class State(object):
         if self.levels[1] - 1 != self.levels[0]:
             raise ValueError('levels of inputs are not consecutive')
 
+        # set index and identifiers - identifiers are used for checking purposes
+        self.index = None
+        self.identifier = None
+
         super(State, self).__init__()
