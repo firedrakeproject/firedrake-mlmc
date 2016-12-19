@@ -464,14 +464,10 @@ def test_updating_ensemble_members():
     u_h_1 = Function(V_h[0]).assign(1)
     u_h_2 = Function(V_h[1]).assign(2)
 
-    ens1 = []
-    ens2 = []
-
     for i in range(10):
 
         S = State(u_h_1, u_h_2)
         EH.AppendToEnsemble(S)
-        ens1.append(S)
 
     u_h_1 = Function(V_h[1]).assign(2)
     u_h_2 = Function(V_h[2]).assign(3)
@@ -480,7 +476,6 @@ def test_updating_ensemble_members():
 
         S = State(u_h_1, u_h_2)
         EH.AppendToEnsemble(S)
-        ens2.append(S)
 
     EH.UpdateStatistics()
     Mean = np.copy(EH.MultilevelExpectation.dat.data[:])
@@ -488,8 +483,8 @@ def test_updating_ensemble_members():
     # change the states
     for i in range(10):
 
-        ens2[i].state[1].assign(4)
-        EH.UpdateEnsembleMember(ens2[i])
+        EH._state_hierarchy[1][i].state[1].assign(4)
+        EH.UpdateEnsembleMember(EH._state_hierarchy[1][i])
 
     EH.UpdateStatistics()
     NewMean = EH.MultilevelExpectation.dat.data[:]
