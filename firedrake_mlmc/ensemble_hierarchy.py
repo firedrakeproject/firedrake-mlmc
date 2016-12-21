@@ -45,8 +45,17 @@ class EnsembleHierarchy(object):
         # This is the actual hierarchy of ensembles
         self._hierarchy = []
 
+        # hierarchy of ensembles of identifiers
+        self._identifier_hierarchy = []
+
+        # hierarchy of states (for future updating)
+        self._state_hierarchy = []
+
         # Length of the hierarchy
         self.L = 0
+
+        # set index identifier - to check if updating appended ensemble is correct
+        self._index_identifier = 0
 
         # Refinement factor
         self.M = self._mesh_hierarchy.refinements_per_level * 2
@@ -98,6 +107,14 @@ class EnsembleHierarchy(object):
 
         return Tuple_to_append
 
+    def __allocate_index_identifier(self):
+
+        """ allocates a state a unique index identifier and pluses one to global """
+
+        self._index_identifier += 1
+
+        return int(self._index_identifier)
+
     def __UpdateDomain(self, s):
 
         """ Updates the :class:`Domain` of the appended State.state :class:`Constant` to the
@@ -114,6 +131,54 @@ class EnsembleHierarchy(object):
         Tuple_to_append = tuple([u_1, u_2])
 
         return Tuple_to_append
+
+    def UpdateEnsembleMember(self, S):
+
+        """ Updates ensemble member (state) given a specific index of entry
+            given at the appending stage
+
+            :param S: The state that needs to replace the state at index
+            :type S: :class:`State
+
+        """
+
+        # check that S has an index associated with it
+        if isinstance(S.index, tuple) is False:
+            raise ValueError('Cant update ensemble with state with no index ' +
+                             'associated with it. Has this state been appended?')
+
+        # check that S has an identifier associated with it
+        if isinstance(S.identifier, int) is False:
+            raise ValueError('Cant update ensemble with state that has no identifier. ' +
+                             'Has this state been appended?')
+
+        # check that S index exists within the hierarchy
+        try:
+            self._hierarchy[S.index[0]][S.index[1]]
+        except IndexError:
+            raise IndexError('Ensemble member with that index does not exist')
+
+        # check that the identifier is same as one in hierarchy
+        if S.identifier != self._identifier_hierarchy[S.index[0]][S.index[1]]:
+            raise ValueError('Identifier of state does not agree with indexed ensemble hierarchy')
+
+        # Update ensemble hierarchy
+        if not isinstance(S.state[0], self._type):
+
+            raise TypeError('The state does not consist of correct types')
+
+        if not isinstance(S.state[1], self._type):
+
+            raise TypeError('The state does not consist of correct types')
+
+        if self._type is Constant:
+            T = self.__UpdateDomain(S.state)
+        if self._type is Function:
+            T = self.__UpdateFunctionSpace(S.state, S.levels[0])
+
+        self._hierarchy[S.index[0]][S.index[1]][0].assign(T[0])
+        self._hierarchy[S.index[0]][S.index[1]][1].assign(T[1])
+        self._state_hierarchy[S.index[0]][S.index[1]] = S
 
     def AppendToEnsemble(self, S):
 
@@ -156,6 +221,15 @@ class EnsembleHierarchy(object):
             # append state to required level
             self._hierarchy[Level_to_append_to].append(T)
 
+            # allocate State an identifier and index
+            member_id = len(self._hierarchy[Level_to_append_to]) - 1
+            S.identifier = self.__allocate_index_identifier()
+            S.index = tuple([Level_to_append_to, int(member_id)])
+
+            # append identifier
+            self._identifier_hierarchy[Level_to_append_to].append(S.identifier)
+            self._state_hierarchy[Level_to_append_to].append(S)
+
             # update ensemble sizes
             self.nl[Level_to_append_to] += 1
 
@@ -178,6 +252,8 @@ class EnsembleHierarchy(object):
 
                 for i in range(skipped_levels + 1):
                     self._hierarchy.append([])
+                    self._identifier_hierarchy.append([])
+                    self._state_hierarchy.append([])
                     self.nl.append(0)
                     self.dxl.append(0)
 
@@ -202,6 +278,8 @@ class EnsembleHierarchy(object):
             else:
 
                 self._hierarchy.append([])
+                self._identifier_hierarchy.append([])
+                self._state_hierarchy.append([])
                 self.nl.append(0)
                 self.dxl.append(0)
 
@@ -233,6 +311,15 @@ class EnsembleHierarchy(object):
             # append state to required level
             self._hierarchy[Level_to_append_to].append(T)
 
+            # allocate State an identifier and index
+            member_id = len(self._hierarchy[Level_to_append_to]) - 1
+            S.identifier = self.__allocate_index_identifier()
+            S.index = tuple([Level_to_append_to, member_id])
+
+            # append identifier
+            self._identifier_hierarchy[Level_to_append_to].append(S.identifier)
+            self._state_hierarchy[Level_to_append_to].append(S)
+
             # update ensemble sizes
             self.nl[Level_to_append_to] += 1
 
@@ -257,6 +344,8 @@ class EnsembleHierarchy(object):
 
         for i in range(self.L):
             self._hierarchy[i] = []
+            self._identifier_hierarchy[i] = []
+            self._state_hierarchy[i] = []
 
     def UpdateStatistics(self, clear_ensemble=False):
         """ Updates statistics of ensemble hierarchy and has the option to clear the stored ensemble

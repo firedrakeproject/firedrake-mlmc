@@ -120,6 +120,56 @@ def test_state_levels_4():
     assert a > b
 
 
+def test_index_and_identifier():
+
+    M = UnitSquareMesh(10, 10)
+    MH = MeshHierarchy(M, 1)
+
+    V = [FunctionSpace(m, 'DG', 0) for m in MH]
+
+    F = Function(V[0])
+    G = Function(V[1])
+
+    S = State(F, G)
+
+    assert S.identifier is None
+    assert S.index is None
+
+    EH = EnsembleHierarchy(V)
+
+    EH.AppendToEnsemble(S)
+
+    assert isinstance(S.identifier, int)
+    assert isinstance(S.index, tuple)
+    assert len(S.index) == 2
+
+
+def test_reassigning_state():
+
+    M = UnitSquareMesh(10, 10)
+    MH = MeshHierarchy(M, 1)
+
+    V = [FunctionSpace(m, 'DG', 0) for m in MH]
+
+    F = Function(V[0])
+    G = Function(V[1])
+
+    S = State(F, G)
+
+    EH = EnsembleHierarchy(V)
+
+    EH.AppendToEnsemble(S)
+
+    S.state[0].assign(1.0)
+    S.state[1].assign(1.0)
+
+    assert isinstance(S.identifier, int)
+    assert isinstance(S.index, tuple)
+
+    assert np.max(np.abs(S.state[0].dat.data - 1.0)) < 1e-5
+    assert np.max(np.abs(S.state[1].dat.data - 1.0)) < 1e-5
+
+
 if __name__ == "__main__":
     import os
     pytest.main(os.path.abspath(__file__))
