@@ -69,10 +69,13 @@ class EnsembleHierarchy(object):
         # sample statistics
         if self._type == Function:
             self.MultilevelExpectation = Function(self._fs_hierarchy[-1])
+            self.MultilevelVariance = Function(self._fs_hierarchy[-1])
             self.MultilevelExpectation.rename('MLMC Estimator')
+            self.MultilevelVariance.rename('MLMC Variance')
 
         if self._type == Constant:
             self.MultilevelExpectation = Constant(0, domain=self._fs_hierarchy[-1].mesh())
+            self.MultilevelVariance = Constant(0, domain=self._fs_hierarchy[-1].mesh())
 
         self.Mean = []  # : A list of the sample mean Functions of each of the different levels
         self.Variance = []  # : A list of the sample variance Functions of each of the different levels
@@ -364,14 +367,18 @@ class EnsembleHierarchy(object):
         # update running multilevel monte carlo average
         if self._type == Function:
             mlmc_sum = Function(self._fs_hierarchy[-1])
+            mlmc_var = Function(self._fs_hierarchy[-1])
 
         if self._type == Constant:
             mlmc_sum = Constant(0, domain=self._fs_hierarchy[-1].mesh())
+            mlmc_var = Function(self._fs_hierarchy[-1])
 
         for i in range(self.L):
             mlmc_sum = mlmc_sum + self.Mean[i]
+            mlmc_var = mlmc_var + (self.Variance[i] / self.nl[i])
 
         self.MultilevelExpectation.assign(mlmc_sum)
+        self.MultilevelVariance.assign(mlmc_var)
 
         if clear_ensemble is True:
 

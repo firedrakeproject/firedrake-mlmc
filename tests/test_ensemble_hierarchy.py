@@ -341,6 +341,8 @@ def test_variance():
 
     EH.UpdateStatistics()
 
+    assert np.all(EH.MultilevelVariance.dat.data == 0) == 1
+
     assert np.all(EH.Variance[0].dat.data == 0) == 1
 
     assert np.all(EH.Variance[1].dat.data == 0) == 1
