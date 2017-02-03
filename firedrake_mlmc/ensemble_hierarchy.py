@@ -371,7 +371,7 @@ class EnsembleHierarchy(object):
 
         if self._type == Constant:
             mlmc_sum = Constant(0, domain=self._fs_hierarchy[-1].mesh())
-            mlmc_var = Function(self._fs_hierarchy[-1])
+            mlmc_var = Constant(0, domain=self._fs_hierarchy[-1].mesh())
 
         for i in range(self.L):
             mlmc_sum = mlmc_sum + self.Mean[i]
