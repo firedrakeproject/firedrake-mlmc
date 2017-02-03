@@ -59,3 +59,15 @@ class State(object):
         self.identifier = None
 
         super(State, self).__init__()
+
+    """ Indexing function """
+
+    def __getitem__(self, idx):
+        """ Return a component in the state
+
+            :arg idx: The index of the state to return
+
+        """
+        if (idx != 0) and (idx != 1):
+            raise ValueError('State can only be indexed by coarse and fine components')
+        return self.state[idx]

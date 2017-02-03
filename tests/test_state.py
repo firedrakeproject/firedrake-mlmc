@@ -170,6 +170,22 @@ def test_reassigning_state():
     assert np.max(np.abs(S.state[1].dat.data - 1.0)) < 1e-5
 
 
+def test_state_indexing():
+
+    M = UnitSquareMesh(10, 10)
+    MH = MeshHierarchy(M, 1)
+
+    V = [FunctionSpace(m, 'DG', 0) for m in MH]
+
+    F = Function(V[0])
+    G = Function(V[1])
+
+    S = State(F, G)
+
+    assert S[0] == F
+    assert S[1] == G
+
+
 if __name__ == "__main__":
     import os
     pytest.main(os.path.abspath(__file__))
