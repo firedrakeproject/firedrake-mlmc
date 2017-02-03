@@ -67,6 +67,9 @@ print 'With variance in cell basis coeffs on first level: ', e_h.Variance[0].dat
 
 print 'but none on the second: ', e_h.Variance[1].dat.data
 
+print ('And thus the multilevel Monte Carlo approximation variance is the first level sample ' +
+       'divided by the number of samples on that level: ', e_h.MultilevelVariance.dat.data)
+
 # now clear the ensemble
 e_h.UpdateStatistics(clear_ensemble=True)
 
