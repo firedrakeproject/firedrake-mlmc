@@ -65,7 +65,7 @@ class State(object):
     def __getitem__(self, idx):
         """ Return a component in the state
 
-            :arg idx: The index of the ensemble to return
+            :arg idx: The index of the state to return
 
         """
         if (idx != 0) and (idx != 1):
